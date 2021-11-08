@@ -14,10 +14,19 @@ const Router = (props) => {
   }
   initOption(routerConfig)
 
+  onLoad = () => {
+    const iframe = document.querySelector('iframe');
+    iframe.contentWindow.postMessage({data:'remons'}, '*')
+    // 子页面
+    window.addEventListener('message', e=> {
+      console.log(e);
+    })
+  }
+
   const { menu } = props;
   return <>
     {
-      menu.type === 'iframe' && <iframe width='100%' height='100%' src={menu.path}></iframe>
+      menu.type === 'iframe' && <iframe width='100%' onLoad={onLoad} height='100%' src={menu.path}></iframe>
     }
     {
       menu.type === 'router' &&
