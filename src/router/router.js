@@ -14,7 +14,6 @@ const Router = (props) => {
   }
   initOption(routerConfig)
 
-  console.log(routerOptions);
   const { menu } = props;
   return <>
     {
