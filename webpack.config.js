@@ -17,7 +17,7 @@ module.exports = (env) => {
     entry: path.resolve(__dirname, 'src/main.jsx'),
     mode,
     output: {
-      filename: 'index.js',
+      filename: '[name].js',
       publicPath: '/',
       clean: true,
     },
