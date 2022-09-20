@@ -1,3 +1,4 @@
+import React from 'react';
 import { Layout, Menu } from 'antd';
 import './index.less'
 import { routerConfig } from './router/index'

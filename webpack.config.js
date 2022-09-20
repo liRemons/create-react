@@ -2,29 +2,32 @@ const { Configuration, DefinePlugin, ProgressPlugin } = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+const ReactRefreshPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const path = require('path')
 const rules = require('./config/rules')
-const packageJSON = require('./package.json')
+const packageJSON = require('./package.json');
+const { setExternals } = require('./scripts/common');
+
 /**
  * @type {Configuration}
  */
 
 module.exports = (env, args) => {
   const mode = args.mode
+  const isEnvDevelopment = mode === "development";
+  const isEnvProduction = mode === "production";
   const otherParams = {}
-  ;(env.otherParams || '').split(',').forEach((item) => {
-    otherParams[item.split('=')[0]] = item.split('=')[1]
-  })
+    ; (env.otherParams || '').split(',').forEach((item) => {
+      otherParams[item.split('=')[0]] = item.split('=')[1]
+    })
   const config = {
-    entry: path.resolve(__dirname, 'src/main.jsx'),
+    entry: path.resolve(__dirname, 'src/main.jsx') ,
     mode,
     output: {
       filename: '[name].js',
-      publicPath: '/',
-      clean: true,
     },
     optimization: {
       minimize: true,
@@ -71,20 +74,11 @@ module.exports = (env, args) => {
         '@axios': path.resolve(__dirname, 'src/axios'),
         '@assets': path.resolve(__dirname, 'src/assets'),
         '@utils': path.resolve(__dirname, 'src/utils'),
-        '@pages': path.resolve(__dirname, 'src/pages'),
       },
     },
-    externals: {
-      react: 'React',
-      'react-dom': 'ReactDOM',
-      antd: 'antd',
-      mobx: 'mobx',
-      'mobx-react': 'mobxReact',
-      classnames: 'classNames',
-    },
+    externals: setExternals(isEnvProduction),
     plugins: [
       new HtmlWebpackPlugin({
-        filename: 'index.html',
         template: path.resolve(__dirname, 'src/index.html'),
       }),
       new ProgressPlugin({
@@ -103,30 +97,31 @@ module.exports = (env, args) => {
       new BundleAnalyzerPlugin({
         defaultSizes: 'stat',
         analyzerMode:
-          mode === 'production' && otherParams.report === 'true'
+          isEnvProduction && otherParams.report === 'true'
             ? 'server'
             : 'disabled',
       }),
-      mode === 'production' && otherParams.gzip === 'true'
+      isEnvProduction && otherParams.gzip === 'true'
         ? new CompressionPlugin()
         : null,
-    ].filter((_) => !!_),
+      new ReactRefreshPlugin()
+
+    ].filter(Boolean),
     devServer: {
       static: {
         directory: path.resolve(__dirname, 'dist'),
       },
       compress: true,
-      port: 3033,
       host: 'local-ip',
+      allowedHosts: 'auto',
       open: true,
       hot: true,
       client: {
         progress: true,
       },
-      historyApiFallback: true
     },
     stats: 'errors-only',
-    devtool: mode === 'development' ? 'eval-source-map' : false,
+    devtool: isEnvDevelopment ? 'eval-source-map' : false,
   }
   return config
 }

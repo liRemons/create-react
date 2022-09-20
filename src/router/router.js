@@ -1,3 +1,4 @@
+import React from 'react';
 import { observer } from 'mobx-react';
 import { routerConfig } from './index';
 import { Switch, Route } from 'react-router-dom';

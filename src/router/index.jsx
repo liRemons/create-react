@@ -1,4 +1,4 @@
-import Demo from '@pages/demo'
+import Demo from '../pages/demo'
 export const routerConfig = [
   { title: '首页', path: '/demo', component: Demo, type: 'router' },
   { title: 'nav1', path: 'http://remons.cn:8001/demo', type: 'iframe' },
