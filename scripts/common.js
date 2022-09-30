@@ -1,5 +1,4 @@
 const setExternals = (isEnvProduction) => {
-  console.log(isEnvProduction);
   return isEnvProduction ? {
     react: 'React',
     'react-dom': 'ReactDOM',
